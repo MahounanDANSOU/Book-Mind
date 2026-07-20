@@ -1,0 +1,15 @@
+embedding_model: intfloat/multilingual-e5-small
+llm_model: qwen2.5:3b-instruct
+chunk_size_mots: 350      # ~500 tokens en français
+chunk_overlap_mots: 60
+top_k: 5
+db_path: data/db/logos.db
+emb_path: data/db/embeddings.npy
+ids_path: data/db/chunk_ids.npy
+raw_dir: data/raw
+eval_path: data/eval.jsonl
+ollama_url: http://localhost:11434/api/generate
+
+# OCR (texte piégé dans des images / PDF scannés) — Tesseract installé, langues fra+eng en place.
+ocr_fallback: true
+ocr_langue: fra+eng

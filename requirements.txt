@@ -1,0 +1,9 @@
+sentence-transformers
+numpy
+streamlit
+requests
+pyyaml
+pymupdf
+paddleocr
+paddlepaddle
+pillow
