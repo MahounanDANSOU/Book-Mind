@@ -1,8 +1,31 @@
-# BookMind
+# 📚 BookMind
 
-Assistant documentaire local : posez une question en langage naturel sur une bibliothèque de documents (PDF, `.txt`, `.md`) et obtenez une réponse rédigée et sourcée, ou une liste des documents les plus pertinents.
+**Assistant documentaire IA 100 % local — RAG conversationnel sur votre propre bibliothèque, sans jamais envoyer une seule donnée dans le cloud.**
 
-Conçu pour un principe simple : **aucune donnée ne quitte votre machine**. Pas d'appel à une API IA tierce (OpenAI, Google, etc.) — la recherche et la génération tournent entièrement en local. Ce dépôt peut servir de base pour construire votre propre outil du même genre.
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-UI-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Ollama](https://img.shields.io/badge/Ollama-LLM%20local-000000?logo=ollama&logoColor=white)](https://ollama.com/)
+[![100% Local](https://img.shields.io/badge/Confidentialité-100%25%20local-2ea44f)](#principe-de-conception)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Posez une question en langage naturel sur des centaines de pages de PDF/`.txt`/`.md` : **BookMind** cherche dans l'intégralité du corpus, raisonne, rédige une réponse **sourcée page par page**, et cite les livres consultés — le tout sur un simple PC, sans API OpenAI/Google, sans upload, sans abonnement.
+
+C'est un système **RAG (Retrieval-Augmented Generation)** complet et fonctionnel : ingestion PDF avec OCR de secours, recherche hybride lexicale + vectorielle (embeddings sémantiques), fusion des classements, génération par LLM local avec raisonnement, interface de chat façon ChatGPT — et une évaluation objective (Recall@k, MRR) pour piloter chaque réglage avec des chiffres, pas des impressions.
+
+**Mots-clés** : `RAG` · `Retrieval-Augmented Generation` · `LLM local` · `IA embarquée` · `on-device AI` · `recherche sémantique` · `vector search` · `embeddings` · `Ollama` · `Streamlit` · `PyMuPDF` · `OCR (PaddleOCR)` · `SQLite FTS5` · `BM25` · `Reciprocal Rank Fusion` · `chatbot documentaire` · `assistant IA privé` · `privacy-first AI` · `Python`
+
+## ✨ Points forts
+
+- 🔒 **100 % local et privé** — aucune donnée ne quitte la machine, aucun appel API tiers
+- 💬 **Chat conversationnel** avec raisonnement (mode "thinking" du LLM) et historique
+- 🌍 **Multilingue** — questions et réponses en français, anglais, espagnol
+- 🔎 **Recherche hybride** exhaustive : BM25 (lexical) + embeddings `bge-m3` (sémantique), fusionnés par Reciprocal Rank Fusion, sur **tout** le corpus à chaque question
+- 📑 **Citations vérifiables** — chaque affirmation est rattachée à un livre et une page réels, jamais de texte inventé
+- 🖼️ **OCR de secours** (PaddleOCR) pour les PDF scannés, avec détection des pages blanches pour ne pas perdre de temps
+- 🧩 **Découpage aligné sur les phrases** — les passages cités restent lisibles, les embeddings ne sont jamais tronqués en plein milieu d'une phrase
+- ⚛️ **Bascule atomique de l'index** — l'application continue de répondre normalement pendant qu'une ré-ingestion tourne en arrière-plan
+- 📊 **Évaluation objective** (Recall@k, MRR) générée automatiquement à partir de votre propre corpus
+- 🧠 **Détection automatique des chapitres** — synthèse structurée d'un chapitre entier par simple sélection de son titre
 
 ## Comment ça marche
 
@@ -10,17 +33,17 @@ Conçu pour un principe simple : **aucune donnée ne quitte votre machine**. Pas
 Documents (PDF/.txt/.md)
         │
         ▼
-   ingest.py ──► découpe en chunks ──► SQLite + FTS5 (index lexical)
-                                   └──► embeddings (sentence-transformers) → .npy
+   ingest.py ──► OCR de secours + découpage par phrases ──► SQLite + FTS5 (index lexical)
+                                                         └──► embeddings bge-m3 (Ollama) → .npy
         │
         ▼
-   search.py ──► recherche hybride (BM25 + similarité cosinus, fusion RRF)
+   search.py ──► recherche hybride (BM25 + similarité cosinus, fusion RRF) sur tout le corpus
         │
         ▼
-  generate.py ──► LLM local (Ollama) ──► réponse rédigée, sourcée
+  generate.py ──► LLM local (Ollama, raisonnement) ──► réponse rédigée, sourcée, multilingue
         │
         ▼
-    app.py ──► interface Streamlit
+    app.py ──► interface de chat Streamlit
 ```
 
 - **Recherche lexicale** (FTS5/BM25) : bonne sur les termes exacts, sigles, formules.
